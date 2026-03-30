@@ -44,10 +44,28 @@ async def handle_webhook(request: Request):
                 for change in entry.get("changes", []):
                     value = change.get("value", {})
                     
-                    # Ignorar actualizaciones de estado (entregado, leído, etc.)
-                    if "messages" in value:
-                        for message in value["messages"]:
-                            await process_message(message, value["metadata"]["phone_number_id"])
+                    # Filtrar statuses (no son mensajes)
+                    if "statuses" in value:
+                        continue
+                        
+                    # Filtrar mensajes vacíos
+                    if "messages" not in value or not value["messages"]:
+                        continue
+                        
+                    for message in value["messages"]:
+                        # Filtrar ecos del propio bot
+                        phone_number_id = value.get("metadata", {}).get("phone_number_id", "")
+                        sender_phone = message.get("from", "")
+                        if phone_number_id and sender_phone == phone_number_id:
+                            logger.info(f"Ignorando echo message del bot: {sender_phone}")
+                            continue
+                            
+                        # Filtrar mensajes no soportados
+                        if message.get("type") not in ["text", "image", "document", "audio", "interactive"]:
+                            logger.info(f"Ignorando mensaje de tipo no soportado: {message.get('type')}")
+                            continue
+                            
+                        await process_message(message, phone_number_id)
                             
         return {"status": "ok"}
     except Exception as e:
@@ -134,18 +152,18 @@ async def process_message(message: dict, phone_number_id: str):
         # Inyectar el resultado en el mensaje del agente (reemplazar placeholders si existen)
         # En un sistema real, se volvería a llamar al agente con el precio calculado,
         # pero para el MVP podemos inyectarlo directamente si el agente dejó un placeholder
-        msg_text = agent_response.get("mensaje_usuario", "")
+        msg_text = agent_response.get("respuesta_agente", "")
         if "XXX" in msg_text:
             msg_text = msg_text.replace("XXX", str(precio_desglose["total"]))
-            agent_response["mensaje_usuario"] = msg_text
+            agent_response["respuesta_agente"] = msg_text
             
     elif siguiente_accion == "enviar_enlace_pago":
-        msg_text = agent_response.get("mensaje_usuario", "")
+        msg_text = agent_response.get("respuesta_agente", "")
         if "[LINK PAGO" in msg_text:
             # Generar link mock para el MVP
             link = f"https://pago.transferauto.es/checkout/{phone}"
             msg_text = msg_text.replace("[LINK PAGO / WHATSAPP FLOW]", link).replace("[LINK PAGO]", link)
-            agent_response["mensaje_usuario"] = msg_text
+            agent_response["respuesta_agente"] = msg_text
             
     elif siguiente_accion == "derivar_humano":
         # En el MVP, simplemente registramos
@@ -153,7 +171,8 @@ async def process_message(message: dict, phone_number_id: str):
         state_manager.update_state(phone, {"notas_internas": "Derivado a humano"})
     
     # 7. Enviar respuesta al usuario
-    respuesta_texto = agent_response.get("mensaje_usuario", "Lo siento, no he podido procesar tu solicitud.")
+    respuesta_texto = agent_response.get("respuesta_agente", "Lo siento, no he podido procesar tu solicitud.")
+    logger.info(f"Enviando respuesta a {phone}: {respuesta_texto}")
     
     # Añadir respuesta del bot al historial
     state_manager.add_message(phone, "assistant", respuesta_texto)

@@ -37,7 +37,7 @@ ESTADO ACTUAL DEL EXPEDIENTE:
 INSTRUCCIÓN OBLIGATORIA:
 Debes responder SIEMPRE con un objeto JSON válido que cumpla esta estructura exacta:
 {{
-  "mensaje_usuario": "string",
+  "respuesta_agente": "texto que el agente debe enviar al cliente",
   "estado_actual": "string",
   "datos_detectados": {{}},
   "datos_faltantes": ["string"],
@@ -68,7 +68,7 @@ Debes responder SIEMPRE con un objeto JSON válido que cumpla esta estructura ex
         logger.error(f"Error decoding JSON from OpenAI: {e}")
         # Fallback de emergencia
         return {
-            "mensaje_usuario": "Lo siento, ha habido un error técnico. ¿Puedes repetir tu último mensaje?",
+            "respuesta_agente": "Hola, soy Asistentia de Transfer Auto. ¿En qué te puedo ayudar?",
             "estado_actual": user_state.get("expediente_estado", "inicio"),
             "datos_detectados": {},
             "datos_faltantes": [],
@@ -79,7 +79,7 @@ Debes responder SIEMPRE con un objeto JSON válido que cumpla esta estructura ex
     except Exception as e:
         logger.error(f"Error calling OpenAI API: {e}")
         return {
-            "mensaje_usuario": "En este momento nuestros sistemas están ocupados. Por favor, inténtalo de nuevo en unos minutos.",
+            "respuesta_agente": "Hola, soy Asistentia de Transfer Auto. ¿En qué te puedo ayudar?",
             "estado_actual": user_state.get("expediente_estado", "inicio"),
             "datos_detectados": {},
             "datos_faltantes": [],
