@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: transfer-auto-webhook
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: WHATSAPP_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_VERIFY_TOKEN
+        sync: false
+      - key: HONORARIOS_BASE
+        value: "99"
+      - key: RECARGO_URGENCIA
+        value: "50"
