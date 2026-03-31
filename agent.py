@@ -19,15 +19,50 @@ def build_system_prompt() -> str:
         logger.error(f"Error reading system prompt: {e}")
         return "Eres Asistentia, el agente experto en tramitación administrativa de vehículos en España de Transfer Auto."
 
-def get_agent_response(messages: list, user_state: dict) -> dict:
+def get_agent_response(messages: list, user_state: dict, session_context: dict = None) -> dict:
     """
     Llama a la API de OpenAI y devuelve la respuesta estructurada.
     """
+    if session_context is None:
+        session_context = {}
+        
     system_prompt = build_system_prompt()
+    
+    modo = session_context.get("modo_usuario", "operativo_transfer_auto")
+    uso = session_context.get("uso_mes_actual", {})
+    limites = session_context.get("limites_mes", {})
+    es_admin = session_context.get("es_admin", False)
+
+    mode_instructions = f"\n\nMODO ACTIVO: {modo}\n"
+
+    if modo == "operativo_transfer_auto":
+        mode_instructions += "COMPORTAMIENTO: Solo guiar al cierre. No analizar casos. No explicar riesgos. No dar información que no lleve a contratar. Detectar trámite, recoger datos, calcular precio, llevar a pago, pedir documentación.\n"
+    elif modo == "lite":
+        heavy_consumidos = uso.get("analisis_heavy_consumidos", 0)
+        heavy_limite = limites.get("analisis_heavy", 1)
+        heavy_disponibles = max(0, heavy_limite - heavy_consumidos) if heavy_limite != -1 else -1
+        mode_instructions += f"COMPORTAMIENTO: Orientar, resolver dudas, análisis básico de viabilidad, detección de riesgos simples. Análisis heavy disponibles este mes: {heavy_disponibles if heavy_disponibles != -1 else 'ilimitados'}. Si el usuario pide análisis heavy y ya no tiene disponibles, responder: 'Ya has usado tu análisis avanzado de este mes en el plan Lite. Si quieres seguir con análisis complejos ilimitados, necesitas el plan Pro. ¿Quieres que te dejemos el trámite hecho nosotros?' Siempre terminar en conversión.\n"
+    elif modo == "pro":
+        mode_instructions += "COMPORTAMIENTO: Análisis completo, detección de riesgos legales y administrativos, estimación de viabilidad, comparativas de operaciones, optimización fiscal, escenarios múltiples. Siempre terminar ofreciendo el paso a tramitación. Formato de análisis: incluir viabilidad (alta/media/baja/nula), riesgo_legal (alto/medio/bajo), recomendación.\n"
+    elif modo == "admin":
+        mode_instructions += "COMPORTAMIENTO: Modo administrador. Puedes recibir y ejecutar comandos /admin. Puedes guardar, corregir y desactivar reglas en la memoria del sistema. Puedes enviar mensajes manuales, confirmar pagos y cambiar modos de usuario (solo si numero_autorizado=true).\n"
+
+    from memory_store import get_active_rules
+    tramite = user_state.get("tramite_principal", "")
+    ccaa = user_state.get("comunidad_autonoma", "")
+    active_rules = get_active_rules(tramite=tramite, ccaa=ccaa, modo=modo)
+
+    if active_rules:
+        rules_text = "\n\nREGLAS ACTIVAS DEL SISTEMA:\n"
+        for rule in active_rules[:10]:  # máximo 10 reglas para no saturar el contexto
+            rules_text += f"- [{rule['tipo'].upper()}] {rule['titulo']}: {rule['contenido']}\n"
+        full_system_prompt = system_prompt + mode_instructions + rules_text
+    else:
+        full_system_prompt = system_prompt + mode_instructions
     
     # Añadir el estado actual al system prompt para dar contexto al modelo
     context_prompt = f"""
-{system_prompt}
+{full_system_prompt}
 
 ESTADO ACTUAL DEL EXPEDIENTE:
 ```json

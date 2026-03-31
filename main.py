@@ -5,6 +5,66 @@ from state_manager import state_manager
 from agent import get_agent_response
 from whatsapp_client import send_message, mark_as_read
 from itp_calculator import calcular_precio
+from memory_store import add_rule, deactivate_rule, update_rule, get_recent_rules, find_rule
+
+def handle_admin_command(command: str, sender: str) -> str:
+    cmd = command.strip()
+    
+    if cmd.startswith("/admin guardar_regla:"):
+        contenido = cmd.replace("/admin guardar_regla:", "").strip()
+        rule = add_rule("operational_rule", contenido[:50], contenido, prioridad="alta")
+        return f"✅ Regla guardada. ID: {rule['memory_id'][:8]}..."
+    
+    elif cmd.startswith("/admin corregir_regla:"):
+        parts = cmd.replace("/admin corregir_regla:", "").strip().split("=>")
+        if len(parts) == 2:
+            titulo = parts[0].strip()
+            nuevo = parts[1].strip()
+            if update_rule(titulo, nuevo):
+                return f"✅ Regla actualizada: {titulo}"
+            return f"❌ No encontré la regla: {titulo}"
+    
+    elif cmd.startswith("/admin desactivar_regla:"):
+        titulo = cmd.replace("/admin desactivar_regla:", "").strip()
+        if deactivate_rule(titulo):
+            return f"✅ Regla desactivada: {titulo}"
+        return f"❌ No encontré la regla: {titulo}"
+    
+    elif cmd.startswith("/admin ver_regla:"):
+        query = cmd.replace("/admin ver_regla:", "").strip()
+        rules = find_rule(query)
+        if rules:
+            r = rules[0]
+            return f"📋 {r['titulo']}\n{r['contenido']}\nID: {r['memory_id'][:8]}... | v{r['version']} | {'✅' if r['activa'] else '❌'}"
+        return f"❌ No encontré reglas para: {query}"
+    
+    elif cmd.strip() == "/admin ultimas_reglas":
+        rules = get_recent_rules(5)
+        if not rules:
+            return "No hay reglas guardadas."
+        lines = ["📋 Últimas reglas:"]
+        for r in rules:
+            lines.append(f"- {r['titulo']} ({r['tipo']}) {'✅' if r['activa'] else '❌'}")
+        return "\n".join(lines)
+    
+    elif cmd.startswith("/admin guardar_caso:"):
+        contenido = cmd.replace("/admin guardar_caso:", "").strip()
+        rule = add_rule("case_pattern", contenido[:50], contenido, prioridad="alta")
+        return f"✅ Caso guardado. ID: {rule['memory_id'][:8]}..."
+    
+    elif cmd.startswith("/admin mensaje:"):
+        parts = cmd.replace("/admin mensaje:", "").strip().split("|", 1)
+        if len(parts) == 2:
+            numero = parts[0].strip()
+            mensaje = parts[1].strip()
+            send_message(numero, mensaje)
+            return f"✅ Mensaje enviado a {numero}"
+    
+    elif cmd.startswith("/admin pago_confirmado:"):
+        expediente = cmd.replace("/admin pago_confirmado:", "").strip()
+        return f"✅ Pago confirmado para expediente: {expediente}"
+    
+    return "❌ Comando no reconocido. Comandos disponibles: guardar_regla, corregir_regla, desactivar_regla, ver_regla, ultimas_reglas, guardar_caso, mensaje, pago_confirmado"
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -65,15 +125,18 @@ async def handle_webhook(request: Request):
                             logger.info(f"Ignorando mensaje de tipo no soportado: {message.get('type')}")
                             continue
                             
-                        await process_message(message, phone_number_id)
+                        await process_message(message, phone_number_id, body)
                             
         return {"status": "ok"}
     except Exception as e:
         logger.error(f"Error processing webhook: {e}")
         return {"status": "error"}
 
-async def process_message(message: dict, phone_number_id: str):
+async def process_message(message: dict, phone_number_id: str, body: dict = None):
     """Procesa un mensaje individual entrante."""
+    if body is None:
+        body = {}
+        
     phone = message.get("from")
     message_id = message.get("id")
     msg_type = message.get("type")
@@ -111,12 +174,29 @@ async def process_message(message: dict, phone_number_id: str):
         
     logger.info(f"Received message from {phone}: {content}")
     
+    # Extraer contexto de sesión del backend (inyectado en cada request)
+    session_context = {
+        "modo_usuario": body.get("session", {}).get("modo_usuario", "operativo_transfer_auto"),
+        "user_id": body.get("session", {}).get("user_id", phone),
+        "plan_activo": body.get("session", {}).get("plan_activo", "operativo"),
+        "uso_mes_actual": body.get("session", {}).get("uso_mes_actual", {}),
+        "limites_mes": body.get("session", {}).get("limites_mes", {}),
+        "es_admin": body.get("session", {}).get("es_admin", False),
+        "numero_autorizado": body.get("session", {}).get("numero_autorizado", False)
+    }
+
+    # Detectar comandos admin
+    if session_context.get("es_admin") and content.startswith("/admin"):
+        response_text = handle_admin_command(content, phone)
+        send_message(phone, response_text)
+        return
+    
     # 4. Añadir al historial
     state_manager.add_message(phone, "user", content)
     
     # 5. Llamar al agente IA
     history = state_manager.get_history(phone)
-    agent_response = get_agent_response(history, user_state)
+    agent_response = get_agent_response(history, user_state, session_context)
     
     logger.info(f"Agent response: {agent_response}")
     
