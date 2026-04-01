@@ -60,9 +60,43 @@ def get_agent_response(messages: list, user_state: dict, session_context: dict =
     else:
         full_system_prompt = system_prompt + mode_instructions
     
+    # Calcular ITP real si tenemos los datos necesarios
+    precio_context = ""
+    marca = user_state.get("vehiculo_marca", "")
+    modelo = user_state.get("vehiculo_modelo", "")
+    ano = user_state.get("vehiculo_ano", "")
+    ccaa = user_state.get("comunidad_autonoma_comprador", user_state.get("comunidad_autonoma", ""))
+    
+    if marca and modelo and ano and ccaa:
+        try:
+            from itp_calculator import calculate_itp, format_itp_desglose
+            from catalog import get_service
+            ano_int = int(ano)
+            itp_data = calculate_itp(marca, modelo, ano_int, ccaa)
+            
+            tramite_key = user_state.get("tramite_principal", "cambio_titularidad_particulares")
+            service = get_service(tramite_key) or get_service("cambio_titularidad_particulares")
+            precio_gestion = service["precio_gestion"]
+            
+            total = round(itp_data["importe_itp"] + precio_gestion, 2)
+            desglose = format_itp_desglose(itp_data)
+            
+            precio_context = f"""
+PRECIO CALCULADO PARA ESTE CASO:
+{desglose}
+
+Gestión Transfer Auto: {precio_gestion}€ IVA incluido
+TOTAL: {total}€
+
+Usa estos datos exactos cuando presentes el precio al cliente.
+"""
+        except Exception as e:
+            logger.error(f"Error calculando ITP: {e}")
+
     # Añadir el estado actual al system prompt para dar contexto al modelo
     context_prompt = f"""
 {full_system_prompt}
+{precio_context}
 
 ESTADO ACTUAL DEL EXPEDIENTE:
 ```json

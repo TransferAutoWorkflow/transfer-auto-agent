@@ -1,0 +1,21 @@
+[
+  {"codigo_iso": "AN", "comunidad": "Andalucía", "tipo_general_pct": 4.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "AR", "comunidad": "Aragón", "tipo_general_pct": 4.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "AS", "comunidad": "Asturias", "tipo_general_pct": 4.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "IB", "comunidad": "Islas Baleares", "tipo_general_pct": 4.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "CN", "comunidad": "Canarias", "tipo_general_pct": 5.5, "impuesto": "IGIC", "notas": "Canarias aplica IGIC en lugar de ITP para vehículos usados entre particulares"},
+  {"codigo_iso": "CB", "comunidad": "Cantabria", "tipo_general_pct": 8.0, "impuesto": "ITP", "notas": "Tipo incrementado desde 2024"},
+  {"codigo_iso": "CM", "comunidad": "Castilla-La Mancha", "tipo_general_pct": 6.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "CL", "comunidad": "Castilla y León", "tipo_general_pct": 5.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "CT", "comunidad": "Cataluña", "tipo_general_pct": 5.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "VC", "comunidad": "Comunidad Valenciana", "tipo_general_pct": 6.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "EX", "comunidad": "Extremadura", "tipo_general_pct": 6.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "GA", "comunidad": "Galicia", "tipo_general_pct": 8.0, "impuesto": "ITP", "notas": "Tipo incrementado"},
+  {"codigo_iso": "RI", "comunidad": "La Rioja", "tipo_general_pct": 4.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "MD", "comunidad": "Madrid", "tipo_general_pct": 4.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "MC", "comunidad": "Murcia", "tipo_general_pct": 4.0, "impuesto": "ITP", "notas": "Tipo general para vehículos usados"},
+  {"codigo_iso": "NC", "comunidad": "Navarra", "tipo_general_pct": 4.0, "impuesto": "ITP", "notas": "Régimen foral. Tipo general para vehículos usados"},
+  {"codigo_iso": "PV", "comunidad": "País Vasco", "tipo_general_pct": 4.0, "impuesto": "ITP", "notas": "Régimen foral. Tipo general para vehículos usados"},
+  {"codigo_iso": "CE", "comunidad": "Ceuta", "tipo_general_pct": 0.0, "impuesto": "IPSI", "notas": "Exento de ITP. Puede aplicar IPSI según caso"},
+  {"codigo_iso": "ML", "comunidad": "Melilla", "tipo_general_pct": 0.0, "impuesto": "IPSI", "notas": "Exento de ITP. Puede aplicar IPSI según caso"}
+]

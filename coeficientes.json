@@ -1,0 +1,60 @@
+{
+  "fuente": "Orden HAC/1501/2025 - BOE 23/12/2025 - Tablas de depreciación para vehículos usados",
+  "vigencia": "2026",
+  "categorias": {
+    "turismos_todoterreno": {
+      "descripcion": "Turismos, vehículos todoterreno y quads",
+      "tramos": [
+        {"limite_inferior": 0, "limite_superior": 1, "porcentaje": 100, "descripcion": "Hasta 1 año"},
+        {"limite_inferior": 1, "limite_superior": 2, "porcentaje": 84, "descripcion": "Más de 1 hasta 2 años"},
+        {"limite_inferior": 2, "limite_superior": 3, "porcentaje": 67, "descripcion": "Más de 2 hasta 3 años"},
+        {"limite_inferior": 3, "limite_superior": 4, "porcentaje": 56, "descripcion": "Más de 3 hasta 4 años"},
+        {"limite_inferior": 4, "limite_superior": 5, "porcentaje": 47, "descripcion": "Más de 4 hasta 5 años"},
+        {"limite_inferior": 5, "limite_superior": 6, "porcentaje": 39, "descripcion": "Más de 5 hasta 6 años"},
+        {"limite_inferior": 6, "limite_superior": 7, "porcentaje": 34, "descripcion": "Más de 6 hasta 7 años"},
+        {"limite_inferior": 7, "limite_superior": 8, "porcentaje": 28, "descripcion": "Más de 7 hasta 8 años"},
+        {"limite_inferior": 8, "limite_superior": 9, "porcentaje": 24, "descripcion": "Más de 8 hasta 9 años"},
+        {"limite_inferior": 9, "limite_superior": 10, "porcentaje": 19, "descripcion": "Más de 9 hasta 10 años"},
+        {"limite_inferior": 10, "limite_superior": 11, "porcentaje": 17, "descripcion": "Más de 10 hasta 11 años"},
+        {"limite_inferior": 11, "limite_superior": 12, "porcentaje": 15, "descripcion": "Más de 11 hasta 12 años"},
+        {"limite_inferior": 12, "limite_superior": 999, "porcentaje": 10, "descripcion": "Más de 12 años"}
+      ]
+    },
+    "motos_ciclomotores": {
+      "descripcion": "Motocicletas y ciclomotores",
+      "tramos": [
+        {"limite_inferior": 0, "limite_superior": 1, "porcentaje": 100, "descripcion": "Hasta 1 año"},
+        {"limite_inferior": 1, "limite_superior": 2, "porcentaje": 80, "descripcion": "Más de 1 hasta 2 años"},
+        {"limite_inferior": 2, "limite_superior": 3, "porcentaje": 64, "descripcion": "Más de 2 hasta 3 años"},
+        {"limite_inferior": 3, "limite_superior": 4, "porcentaje": 50, "descripcion": "Más de 3 hasta 4 años"},
+        {"limite_inferior": 4, "limite_superior": 5, "porcentaje": 40, "descripcion": "Más de 4 hasta 5 años"},
+        {"limite_inferior": 5, "limite_superior": 6, "porcentaje": 32, "descripcion": "Más de 5 hasta 6 años"},
+        {"limite_inferior": 6, "limite_superior": 7, "porcentaje": 25, "descripcion": "Más de 6 hasta 7 años"},
+        {"limite_inferior": 7, "limite_superior": 8, "porcentaje": 20, "descripcion": "Más de 7 hasta 8 años"},
+        {"limite_inferior": 8, "limite_superior": 9, "porcentaje": 15, "descripcion": "Más de 8 hasta 9 años"},
+        {"limite_inferior": 9, "limite_superior": 10, "porcentaje": 12, "descripcion": "Más de 9 hasta 10 años"},
+        {"limite_inferior": 10, "limite_superior": 11, "porcentaje": 10, "descripcion": "Más de 10 hasta 11 años"},
+        {"limite_inferior": 11, "limite_superior": 12, "porcentaje": 8, "descripcion": "Más de 11 hasta 12 años"},
+        {"limite_inferior": 12, "limite_superior": 999, "porcentaje": 5, "descripcion": "Más de 12 años"}
+      ]
+    },
+    "vehiculos_industriales": {
+      "descripcion": "Furgonetas, camiones, autobuses y vehículos industriales",
+      "tramos": [
+        {"limite_inferior": 0, "limite_superior": 1, "porcentaje": 100, "descripcion": "Hasta 1 año"},
+        {"limite_inferior": 1, "limite_superior": 2, "porcentaje": 80, "descripcion": "Más de 1 hasta 2 años"},
+        {"limite_inferior": 2, "limite_superior": 3, "porcentaje": 64, "descripcion": "Más de 2 hasta 3 años"},
+        {"limite_inferior": 3, "limite_superior": 4, "porcentaje": 50, "descripcion": "Más de 3 hasta 4 años"},
+        {"limite_inferior": 4, "limite_superior": 5, "porcentaje": 40, "descripcion": "Más de 4 hasta 5 años"},
+        {"limite_inferior": 5, "limite_superior": 6, "porcentaje": 32, "descripcion": "Más de 5 hasta 6 años"},
+        {"limite_inferior": 6, "limite_superior": 7, "porcentaje": 25, "descripcion": "Más de 6 hasta 7 años"},
+        {"limite_inferior": 7, "limite_superior": 8, "porcentaje": 20, "descripcion": "Más de 7 hasta 8 años"},
+        {"limite_inferior": 8, "limite_superior": 9, "porcentaje": 15, "descripcion": "Más de 8 hasta 9 años"},
+        {"limite_inferior": 9, "limite_superior": 10, "porcentaje": 12, "descripcion": "Más de 9 hasta 10 años"},
+        {"limite_inferior": 10, "limite_superior": 11, "porcentaje": 10, "descripcion": "Más de 10 hasta 11 años"},
+        {"limite_inferior": 11, "limite_superior": 12, "porcentaje": 8, "descripcion": "Más de 11 hasta 12 años"},
+        {"limite_inferior": 12, "limite_superior": 999, "porcentaje": 5, "descripcion": "Más de 12 años"}
+      ]
+    }
+  }
+}
